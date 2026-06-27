@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESCAPEOS — Every Visit Is A New Mystery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#07080B;
+    --charcoal:#14161C;
+    --panel:#1A1C24;
+    --panel-line:#262934;
+    --deep-blue:#1B2A4A;
+    --mist:rgba(86,114,168,0.16);
+    --amber:#E8A857;
+    --amber-soft:rgba(232,168,87,0.35);
+    --amber-dim:rgba(232,168,87,0.12);
+    --parchment:#ECE7DC;
+    --muted:#8B92A3;
+    --danger:#C9655F;
+    --ok:#7FBF9E;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--void); color:var(--parchment); font-family:'Inter',sans-serif; overflow-x:hidden; -webkit-font-smoothing:antialiased;}
+  ::selection{background:var(--amber-soft); color:var(--void);}
+  a{color:inherit; text-decoration:none;}
+  button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit;}
+  :focus-visible{outline:2px solid var(--amber); outline-offset:3px; border-radius:4px;}
+  h1,h2,h3{font-family:'Fraunces',serif; font-weight:600; letter-spacing:-0.01em;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .eyebrow{font-family:'JetBrains Mono',monospace; font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--amber); display:flex; align-items:center; gap:.6em;}
+  .eyebrow::before{content:''; width:14px; height:1px; background:var(--amber-soft);}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
+  .hr{border:none; height:1px; background:linear-gradient(90deg, transparent, var(--panel-line), transparent);}
+  [hidden]{display:none !important;}
+
+  /* ---------- NAV ---------- */
+  .nav{position:fixed; top:0; left:0; right:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:20px 28px; backdrop-filter:blur(10px); background:linear-gradient(to bottom, rgba(7,8,11,.85), transparent);}
+  .nav .brand{display:flex; align-items:center; gap:10px; font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem; letter-spacing:.02em;}
+  .nav .brand .mark{width:9px; height:9px; border-radius:50%; background:var(--amber); box-shadow:0 0 14px 3px var(--amber-soft);}
+  .nav .links{display:flex; gap:34px; font-size:.86rem; color:var(--muted);}
+  .nav .links a:hover{color:var(--parchment);}
+  .btn{font-size:.85rem; font-weight:500; padding:11px 22px; border-radius:8px; transition:all .25s ease;}
+  .btn-amber{background:var(--amber); color:#1a1306; box-shadow:0 0 0 0 var(--amber-soft);}
+  .btn-amber:hover{box-shadow:0 4px 24px -4px var(--amber-soft); transform:translateY(-1px);}
+  .btn-ghost{border:1px solid var(--panel-line); color:var(--parchment);}
+  .btn-ghost:hover{border-color:var(--amber-soft); background:var(--amber-dim);}
+  @media (max-width:760px){ .nav .links{display:none;} }
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; overflow:hidden; padding:120px 24px 80px;}
+  #fogCanvas{position:absolute; inset:0; width:100%; height:100%; z-index:0;}
+  .hero::after{content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 100%, var(--deep-blue) 0%, transparent 60%); opacity:.5; z-index:0; pointer-events:none;}
+  .hero-inner{position:relative; z-index:2; max-width:900px;}
+  .hero h1{font-size:clamp(2.6rem, 7vw, 5.4rem); line-height:1.02; color:var(--parchment); text-shadow:0 2px 40px rgba(0,0,0,.6);}
+  .hero h1 em{font-style:italic; color:var(--amber); font-weight:500;}
+  .hero p.sub{margin-top:22px; font-size:1.08rem; color:var(--muted); max-width:560px; margin-inline:auto; line-height:1.6;}
+  .hero .cta-row{margin-top:42px; display:flex; gap:16px; justify-content:center; flex-wrap:wrap;}
+  .hero .cta-row .btn{padding:15px 30px; font-size:.92rem;}
+  .lantern{position:fixed; width:340px; height:340px; border-radius:50%; pointer-events:none; z-index:1; transform:translate(-50%,-50%); background:radial-gradient(circle, var(--amber-dim) 0%, transparent 70%); mix-blend-mode:screen; transition:opacity .3s; opacity:0;}
+  .hero:hover .lantern{opacity:1;}
+
+  /* ---------- SECTION SCAFFOLD ---------- */
+  section{position:relative; padding:120px 0;}
+  .sec-head{max-width:620px; margin-bottom:64px;}
+  .sec-head h2{font-size:clamp(1.8rem,3.2vw,2.6rem); margin-top:14px; color:var(--parchment);}
+  .sec-head p{margin-top:14px; color:var(--muted); line-height:1.7; font-size:.98rem;}
+
+  /* How it works */
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:0;}
+  .step{padding:32px 28px; border-left:1px solid var(--panel-line); position:relative;}
+  .step:first-child{border-left:none;}
+  .step .num{font-family:'JetBrains Mono',monospace; color:var(--amber); font-size:.78rem; letter-spacing:.1em;}
+  .step h3{font-size:1.25rem; margin-top:16px; font-weight:600;}
+  .step p{margin-top:10px; color:var(--muted); font-size:.92rem; line-height:1.65;}
+  @media (max-width:760px){ .steps{grid-template-columns:1fr;} .step{border-left:none; border-top:1px solid var(--panel-line); padding:28px 0;} .step:first-child{border-top:none;} }
+
+  /* Features */
+  .feat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--panel-line); border:1px solid var(--panel-line); border-radius:14px; overflow:hidden;}
+  .feat{background:var(--charcoal); padding:30px 24px; min-height:190px; display:flex; flex-direction:column; justify-content:space-between;}
+  .feat .icn{width:30px; height:30px; opacity:.9;}
+  .feat h4{font-size:1.02rem; font-weight:600; margin-top:18px;}
+  .feat p{font-size:.85rem; color:var(--muted); margin-top:8px; line-height:1.55;}
+  @media (max-width:900px){ .feat-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:560px){ .feat-grid{grid-template-columns:1fr;} }
+
+  /* Worlds strip */
+  .worlds-row{display:flex; gap:14px; overflow-x:auto; padding-bottom:12px; scrollbar-width:thin;}
+  .world-card{flex:0 0 200px; height:130px; border-radius:12px; border:1px solid var(--panel-line); background:linear-gradient(150deg, var(--panel), var(--charcoal)); padding:16px; display:flex; flex-direction:column; justify-content:space-between; transition:border-color .25s, transform .25s;}
+  .world-card:hover{border-color:var(--amber-soft); transform:translateY(-3px);}
+  .world-card .wlabel{font-size:.95rem; font-weight:600; font-family:'Fraunces',serif;}
+  .world-card .wtag{font-size:.7rem; color:var(--muted); font-family:'JetBrains Mono',monospace; letter-spacing:.05em;}
+
+  /* Daily + leaderboard */
+  .daily-grid{display:grid; grid-template-columns:1.1fr 1fr; gap:40px; align-items:start;}
+  .daily-card{border:1px solid var(--panel-line); border-radius:16px; padding:36px; background:radial-gradient(circle at 20% 0%, var(--amber-dim), transparent 60%), var(--charcoal);}
+  .daily-card .timer-chip{display:inline-flex; gap:8px; align-items:center; font-family:'JetBrains Mono',monospace; font-size:.85rem; background:var(--panel); padding:8px 14px; border-radius:999px; border:1px solid var(--panel-line); margin-top:18px;}
+  .lb{border:1px solid var(--panel-line); border-radius:16px; overflow:hidden;}
+  .lb-row{display:flex; justify-content:space-between; padding:14px 22px; font-size:.88rem; border-bottom:1px solid var(--panel-line);}
+  .lb-row:last-child{border-bottom:none;}
+  .lb-row .rank{color:var(--muted); width:28px; font-family:'JetBrains Mono',monospace;}
+  .lb-row .time{font-family:'JetBrains Mono',monospace; color:var(--amber);}
+  @media (max-width:860px){ .daily-grid{grid-template-columns:1fr;} }
+
+  /* Testimonials */
+  .quote-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
+  .quote{padding:28px; border:1px solid var(--panel-line); border-radius:14px; background:var(--charcoal);}
+  .quote p.text{font-size:.95rem; line-height:1.65; color:var(--parchment);}
+  .quote .who{margin-top:18px; font-size:.8rem; color:var(--muted); font-family:'JetBrains Mono',monospace;}
+  @media (max-width:860px){ .quote-grid{grid-template-columns:1fr;} }
+
+  /* Pricing */
+  .price-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  .price-card{border:1px solid var(--panel-line); border-radius:16px; padding:36px; background:var(--charcoal);}
+  .price-card.hi{border-color:var(--amber-soft); background:linear-gradient(160deg, var(--amber-dim), var(--charcoal) 60%);}
+  .price-card .amt{font-family:'Fraunces',serif; font-size:2.6rem; margin-top:6px;}
+  .price-card .amt span{font-size:1rem; color:var(--muted); font-family:'Inter',sans-serif;}
+  .price-card ul{margin-top:24px; display:flex; flex-direction:column; gap:11px;}
+  .price-card li{font-size:.88rem; color:var(--muted); display:flex; gap:10px; align-items:baseline;}
+  .price-card li::before{content:'—'; color:var(--amber);}
+  .price-card .btn{display:inline-block; margin-top:28px; width:100%; text-align:center;}
+  @media (max-width:760px){ .price-grid{grid-template-columns:1fr;} }
+
+  /* FAQ */
+  .faq-item{border-bottom:1px solid var(--panel-line);}
+  .faq-q{width:100%; text-align:left; padding:22px 0; display:flex; justify-content:space-between; align-items:center; font-size:1rem; font-weight:500;}
+  .faq-q .plus{color:var(--amber); transition:transform .25s;}
+  .faq-item.open .plus{transform:rotate(45deg);}
+  .faq-a{max-height:0; overflow:hidden; transition:max-height .3s ease;}
+  .faq-a p{padding-bottom:22px; color:var(--muted); font-size:.92rem; line-height:1.65; max-width:640px;}
+
+  footer{padding:60px 0 50px; border-top:1px solid var(--panel-line); display:flex; justify-content:space-between; flex-wrap:wrap; gap:20px; color:var(--muted); font-size:.85rem;}
+
+  /* =================== GAME VIEW =================== */
+  #game{min-height:100vh; display:flex; flex-direction:column; background:radial-gradient(ellipse at 50% -10%, var(--deep-blue), var(--void) 60%);}
+  .game-bar{display:flex; align-items:center; justify-content:space-between; padding:16px 24px; border-bottom:1px solid var(--panel-line); flex-wrap:wrap; gap:12px;}
+  .game-bar .left{display:flex; align-items:center; gap:16px;}
+  .game-bar .case-id{font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--muted);}
+  .game-bar .case-title{font-family:'Fraunces',serif; font-size:1.1rem;}
+  .game-bar .right{display:flex; align-items:center; gap:10px;}
+  .pill{font-family:'JetBrains Mono',monospace; font-size:.85rem; padding:8px 14px; border-radius:999px; border:1px solid var(--panel-line); background:var(--panel);}
+  .pill.timer{min-width:84px; text-align:center;}
+  .pill.timer.low{color:var(--danger); border-color:var(--danger); animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.55;}}
+  .icon-btn{width:38px; height:38px; border-radius:8px; border:1px solid var(--panel-line); display:flex; align-items:center; justify-content:center; transition:all .2s;}
+  .icon-btn:hover{border-color:var(--amber-soft); background:var(--amber-dim);}
+
+  .scene-area{flex:1; display:flex; align-items:center; justify-content:center; padding:24px;}
+  .scene{position:relative; width:100%; max-width:980px; aspect-ratio:16/9.2; border-radius:18px; overflow:hidden; border:1px solid var(--panel-line); background:linear-gradient(to bottom, #0c0e13 0%, #05060a 75%);}
+  .room-layer{position:absolute; inset:0;}
+  .scene svg{position:absolute; inset:0; width:100%; height:100%;}
+  .scene-overlay{position:absolute; inset:0; pointer-events:none; background:radial-gradient(circle 230px at var(--mx,50%) var(--my,50%), transparent 0%, rgba(4,5,8,0.78) 62%); transition:background .05s linear;}
+  .hotspot{position:absolute; width:38px; height:38px; border-radius:50%; transform:translate(-50%,-50%); cursor:pointer; z-index:5;}
+  .hotspot .dot{position:absolute; inset:0; border-radius:50%; background:var(--amber); opacity:.85; box-shadow:0 0 0 0 var(--amber-soft); animation:glow 2.2s infinite;}
+  .hotspot .ring{position:absolute; inset:-10px; border:1px solid var(--amber-soft); border-radius:50%; opacity:.6;}
+  @keyframes glow{0%{box-shadow:0 0 6px 2px var(--amber-soft);}50%{box-shadow:0 0 16px 6px var(--amber-soft);}100%{box-shadow:0 0 6px 2px var(--amber-soft);}}
+  .hotspot.dim .dot{opacity:.18; animation:none; box-shadow:none;}
+  .hotspot.dim{cursor:default;}
+  .hotspot.secret-hotspot .dot{opacity:.3; animation:glow 4s infinite;}
+  .hotspot.secret-hotspot .ring{opacity:.22;}
+  .room-tag{position:absolute; top:14px; left:14px; z-index:6; font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.1em; color:var(--amber); background:rgba(8,9,12,.7); padding:5px 10px; border-radius:6px; border:1px solid var(--panel-line); pointer-events:none;}
+
+  .archivist{position:fixed; right:22px; bottom:88px; width:272px; z-index:30; font-size:.85rem; max-width:calc(100vw - 44px);}
+  .archivist .card{position:relative; background:rgba(20,22,28,.95); backdrop-filter:blur(10px); border:1px solid var(--panel-line); border-radius:14px; padding:16px; box-shadow:0 16px 48px -10px rgba(0,0,0,.7);}
+  .archivist .close-arch{position:absolute; top:10px; right:10px; width:22px; height:22px; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:.85rem; border-radius:6px;}
+  .archivist .close-arch:hover{color:var(--parchment); background:var(--panel);}
+  .archivist .who{display:flex; align-items:center; gap:10px; margin-bottom:10px; padding-right:20px;}
+  .archivist .who .av{width:28px; height:28px; border-radius:50%; background:radial-gradient(circle at 30% 30%, var(--deep-blue), #0a0c12); border:1px solid var(--panel-line); flex-shrink:0;}
+  .archivist .log{max-height:120px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; margin-bottom:10px;}
+  .archivist .log .line{color:var(--parchment); line-height:1.5;}
+  .archivist .log .line.q{color:var(--amber); font-family:'JetBrains Mono',monospace; font-size:.76rem;}
+  .archivist .prompts{display:flex; flex-direction:column; gap:6px;}
+  .archivist .prompts button{text-align:left; font-size:.78rem; padding:7px 10px; border:1px solid var(--panel-line); border-radius:8px; color:var(--muted);}
+  .archivist .prompts button:hover{border-color:var(--amber-soft); color:var(--parchment);}
+  @media (max-width:560px){ .archivist{right:12px; left:12px; width:auto; bottom:80px;} }
+
+  .inv-bar{display:flex; gap:10px; padding:16px 24px; border-top:1px solid var(--panel-line); align-items:center;}
+  .inv-bar .label{font-size:.7rem; color:var(--muted); font-family:'JetBrains Mono',monospace; letter-spacing:.1em; margin-right:6px;}
+  .inv-slot{width:46px; height:46px; border-radius:9px; border:1px solid var(--panel-line); display:flex; align-items:center; justify-content:center; background:var(--panel); font-size:1rem;}
+  .inv-slot.filled{border-color:var(--amber-soft); background:var(--amber-dim);}
+  .inv-slot.empty{opacity:.35;}
+
+  /* modal */
+  .modal-bg{position:fixed; inset:0; background:rgba(5,6,9,.78); backdrop-filter:blur(4px); z-index:60; display:flex; align-items:center; justify-content:center; padding:20px;}
+  .modal{width:100%; max-width:440px; background:var(--charcoal); border:1px solid var(--panel-line); border-radius:16px; padding:28px; position:relative;}
+  .modal .close{position:absolute; top:16px; right:16px; color:var(--muted); font-size:1.1rem;}
+  .modal .eyebrow{margin-bottom:10px;}
+  .modal h3{font-size:1.25rem;}
+  .modal p.body-text{color:var(--muted); font-size:.92rem; line-height:1.65; margin-top:12px;}
+  .modal .cipher{font-family:'JetBrains Mono',monospace; font-size:1.3rem; letter-spacing:.12em; color:var(--amber); margin-top:16px; text-align:center; padding:14px; border:1px dashed var(--panel-line); border-radius:8px;}
+  .modal input[type=text]{width:100%; margin-top:14px; padding:12px 14px; background:var(--panel); border:1px solid var(--panel-line); border-radius:8px; color:var(--parchment); font-family:'JetBrains Mono',monospace; letter-spacing:.08em; font-size:.95rem;}
+  .modal .dial-row{display:flex; gap:10px; margin-top:16px;}
+  .modal select{flex:1; padding:12px; background:var(--panel); border:1px solid var(--panel-line); border-radius:8px; color:var(--parchment); font-family:'JetBrains Mono',monospace; font-size:1rem; text-align:center;}
+  .modal .actions{display:flex; gap:10px; margin-top:20px;}
+  .modal .actions .btn{flex:1; text-align:center; padding:12px;}
+  .modal .feedback{margin-top:12px; font-size:.84rem; font-family:'JetBrains Mono',monospace;}
+  .modal .feedback.bad{color:var(--danger);}
+  .modal .feedback.good{color:var(--ok);}
+  .hint-link{display:inline-block; margin-top:14px; font-size:.8rem; color:var(--amber); border-bottom:1px dashed var(--amber-soft);}
+  .morse-light{width:54px; height:54px; border-radius:50%; background:#1d2029; border:2px solid var(--panel-line); margin:16px auto 4px; transition:background .07s, box-shadow .07s;}
+  .morse-light.on{background:var(--amber); box-shadow:0 0 26px 8px var(--amber-soft);}
+  .morse-chart{display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--muted);}
+  .morse-chart div{text-align:center; padding:6px 2px; border:1px solid var(--panel-line); border-radius:6px;}
+  .morse-chart div b{display:block; color:var(--amber); font-size:.84rem;}
+  .modal .lede{color:var(--parchment); font-size:.92rem; line-height:1.65; margin-top:8px;}
+
+  .notebook-panel{position:fixed; top:0; right:0; height:100%; width:320px; background:rgba(20,22,28,.97); border-left:1px solid var(--panel-line); z-index:55; padding:28px 22px; overflow-y:auto;}
+  .notebook-panel h3{font-size:1.1rem; margin-bottom:18px;}
+  .notebook-entry{padding:14px 0; border-bottom:1px solid var(--panel-line); font-size:.86rem; color:var(--parchment); line-height:1.6;}
+  .notebook-entry .tag{display:block; font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--amber); margin-bottom:6px; letter-spacing:.08em;}
+  .notebook-empty{color:var(--muted); font-size:.85rem; margin-top:6px;}
+
+  .win-modal .glow-title{font-size:1.8rem; color:var(--amber);}
+
+  @media (prefers-reduced-motion: reduce){
+    .hotspot .dot{animation:none;}
+    .pill.timer.low{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= LANDING ================= -->
+<div id="landing">
+  <nav class="nav">
+    <div class="brand"><span class="mark"></span> ESCAPEOS</div>
+    <div class="links">
+      <a href="#worlds">Cases</a>
+      <a href="#daily">Daily</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <button class="btn btn-amber" id="navStart">Start Your Escape</button>
+  </nav>
+
+  <section class="hero" id="heroSec">
+    <canvas id="fogCanvas"></canvas>
+    <div class="lantern" id="lantern"></div>
+    <div class="hero-inner">
+      <div class="eyebrow" style="justify-content:center;">A Living Escape Room</div>
+      <h1 style="margin-top:18px;">Every visit is<br><em>a new mystery.</em></h1>
+      <p class="sub">No two cases are ever the same. Each one is written, locked, and lit the moment you walk in — and it stays locked if you can't think your way out.</p>
+      <div class="cta-row">
+        <button class="btn btn-amber" id="startBtn">Start Your Escape</button>
+        <a href="#how" class="btn btn-ghost">See How It Works</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="how" class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">The Loop</div>
+      <h2>Three steps. No two outcomes alike.</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="num">01 — ARRIVE</div><h3>A new case is built</h3><p>The Archive writes a story, a cast, and a puzzle chain that has never existed before, then locks you inside it.</p></div>
+      <div class="step"><div class="num">02 — INVESTIGATE</div><h3>Search, question, record</h3><p>Click through rooms, press the people inside for answers, and keep a journal of everything that doesn't add up.</p></div>
+      <div class="step"><div class="num">03 — ESCAPE</div><h3>Beat the case, or don't</h3><p>Solve the final lock before the clock runs out. Fail, and the case stays exactly where you left it — closed.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Why It Feels Different</div>
+      <h2>Built different, every single time.</h2>
+      <p>Nothing here is a template. Every room, every lock, and every line a character speaks is generated fresh for your session.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat">
+        <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="#E8A857" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <div><h4>Living cases</h4><p>Story, characters, and puzzle graph generated per session — never the same room twice.</p></div>
+      </div>
+      <div class="feat">
+        <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="#E8A857" stroke-width="1.4"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg>
+        <div><h4>Characters who remember</h4><p>NPCs hold backstories and secrets. Press them too hard and they stop talking.</p></div>
+      </div>
+      <div class="feat">
+        <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="#E8A857" stroke-width="1.4"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+        <div><h4>Twelve worlds</h4><p>From haunted estates to nuclear bunkers — pick a setting, the Archive does the rest.</p></div>
+      </div>
+      <div class="feat">
+        <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="#E8A857" stroke-width="1.4"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+        <div><h4>One daily case</h4><p>A single new room, the same for everyone, with a global leaderboard reset at midnight.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="worlds">
+    <div class="sec-head">
+      <div class="eyebrow">Twelve Worlds</div>
+      <h2>Pick a setting. We'll write the rest.</h2>
+    </div>
+    <div class="worlds-row" id="worldsRow"></div>
+  </section>
+
+  <section class="wrap" id="daily">
+    <div class="daily-grid">
+      <div class="daily-card">
+        <div class="eyebrow">Daily Case</div>
+        <h2 style="margin-top:12px; font-size:1.7rem;">Sector-7: Cold Archive</h2>
+        <p style="color:var(--muted); margin-top:10px; font-size:.92rem; line-height:1.6;">One room. One chance. Everyone gets the same lock today — only the fastest names make the board.</p>
+        <div class="timer-chip">⏳ resets in <span class="mono">07:42:11</span></div>
+      </div>
+      <div class="lb">
+        <div class="lb-row"><span class="rank">01</span><span>n.vasquez</span><span class="time">03:41</span></div>
+        <div class="lb-row"><span class="rank">02</span><span>archivekid</span><span class="time">04:02</span></div>
+        <div class="lb-row"><span class="rank">03</span><span>ofelia_q</span><span class="time">04:19</span></div>
+        <div class="lb-row"><span class="rank">04</span><span>thelockpick</span><span class="time">04:58</span></div>
+        <div class="lb-row"><span class="rank">05</span><span>m.santoro</span><span class="time">05:13</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Field Reports</div>
+      <h2>What gets left in the journal.</h2>
+    </div>
+    <div class="quote-grid">
+      <div class="quote"><p class="text">"I assumed I'd skim through it like every other escape room site. Forty minutes later I was still arguing with a ghost about a key."</p><div class="who">@ofelia_q</div></div>
+      <div class="quote"><p class="text">"The archivist remembered something I told it ten minutes earlier and used it against me. That's not supposed to happen."</p><div class="who">@thelockpick</div></div>
+      <div class="quote"><p class="text">"Ran the same theme twice with a friend. Completely different case both times. That's the whole pitch, honestly."</p><div class="who">@n.vasquez</div></div>
+    </div>
+  </section>
+
+  <section class="wrap" id="pricing">
+    <div class="sec-head">
+      <div class="eyebrow">Pricing</div>
+      <h2>Free to start. No clock on curiosity.</h2>
+    </div>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="eyebrow">Free</div>
+        <div class="amt">$0</div>
+        <ul>
+          <li>One daily case, same as everyone</li>
+          <li>Global leaderboard access</li>
+          <li>Standard hint chain</li>
+          <li>Ads between cases</li>
+        </ul>
+        <a class="btn btn-ghost" href="#" id="freeCta">Start free</a>
+      </div>
+      <div class="price-card hi">
+        <div class="eyebrow">Premium</div>
+        <div class="amt">$9<span>/mo</span></div>
+        <ul>
+          <li>Unlimited generated cases</li>
+          <li>Every world, including exclusive themes</li>
+          <li>Hard mode and secret endings</li>
+          <li>No ads, ever</li>
+        </ul>
+        <a class="btn btn-amber" href="#" id="premCta">Go premium</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="faq">
+    <div class="sec-head">
+      <div class="eyebrow">Questions</div>
+      <h2>Before you go in.</h2>
+    </div>
+    <div id="faqList"></div>
+  </section>
+
+  <footer class="wrap">
+    <div><strong style="font-family:'Fraunces',serif;">ESCAPEOS</strong><div style="margin-top:6px;">Every visit is a new mystery.</div></div>
+    <div>This demo case is fixed — the full Archive writes a new one per session.</div>
+  </footer>
+</div>
+
+<!-- ================= GAME ================= -->
+<div id="game" hidden>
+  <div class="game-bar">
+    <div class="left">
+      <button class="icon-btn" id="quitBtn" title="Return to surface">←</button>
+      <div>
+        <div class="case-id mono" id="caseId">CASE FILE — VOSS-04A2</div>
+        <div class="case-title">The Voss Estate</div>
+      </div>
+    </div>
+    <div class="right">
+      <button class="icon-btn" id="archivistBtn" title="Talk to the Archivist">💬</button>
+      <button class="icon-btn" id="hintBtn" title="Hint">?</button>
+      <button class="icon-btn" id="notebookBtn" title="Notebook">≡</button>
+      <div class="pill timer mono" id="timerPill">30:00</div>
+    </div>
+  </div>
+
+  <div class="scene-area">
+    <div class="scene" id="scene">
+
+      <!-- ============ ROOM 1: THE STUDY ============ -->
+      <div class="room-layer" id="room-study">
+        <div class="room-tag">UPSTAIRS — STUDY</div>
+        <svg viewBox="0 0 980 560" preserveAspectRatio="xMidYMid slice">
+          <rect width="980" height="560" fill="#0a0c10"/>
+          <rect x="0" y="420" width="980" height="140" fill="#05060a"/>
+          <ellipse cx="490" cy="540" rx="600" ry="80" fill="#0d1018"/>
+          <!-- back wall panel lines -->
+          <rect x="0" y="0" width="980" height="420" fill="#0c0e14"/>
+          <line x1="0" y1="60" x2="980" y2="60" stroke="#1c1f29" stroke-width="2"/>
+          <!-- window -->
+          <g id="gfx-window">
+            <rect x="50" y="40" width="120" height="110" fill="#0c1018" stroke="#262934" stroke-width="3"/>
+            <line x1="110" y1="40" x2="110" y2="150" stroke="#262934" stroke-width="2"/>
+            <line x1="50" y1="95" x2="170" y2="95" stroke="#262934" stroke-width="2"/>
+            <path d="M65 60 L85 75 M150 60 L130 80 M70 130 L95 110" stroke="#3a4252" stroke-width="1.5" opacity="0.6" fill="none"/>
+          </g>
+          <!-- wall clock -->
+          <g id="gfx-clock">
+            <circle cx="450" cy="80" r="34" fill="#10121a" stroke="#2a2e3a" stroke-width="3"/>
+            <line x1="450" y1="80" x2="450" y2="56" stroke="#8B92A3" stroke-width="2"/>
+            <line x1="450" y1="80" x2="474" y2="80" stroke="#E8A857" stroke-width="3"/>
+            <circle cx="450" cy="80" r="3" fill="#E8A857"/>
+          </g>
+          <!-- bookshelf -->
+          <g id="gfx-bookshelf">
+            <rect x="60" y="120" width="200" height="300" fill="#15171f" stroke="#262934"/>
+            <line x1="60" y1="180" x2="260" y2="180" stroke="#262934"/>
+            <line x1="60" y1="240" x2="260" y2="240" stroke="#262934"/>
+            <line x1="60" y1="300" x2="260" y2="300" stroke="#262934"/>
+            <line x1="60" y1="360" x2="260" y2="360" stroke="#262934"/>
+            <rect x="72" y="130" width="14" height="44" fill="#222633"/>
+            <rect x="90" y="125" width="10" height="49" fill="#1d2029"/>
+            <rect x="105" y="132" width="16" height="42" fill="#262a36"/>
+            <rect x="150" y="190" width="12" height="44" fill="#1d2029"/>
+            <rect x="166" y="192" width="14" height="42" fill="#262a36"/>
+          </g>
+          <!-- desk + drawer -->
+          <g id="gfx-desk">
+            <rect x="610" y="300" width="280" height="20" fill="#181b24"/>
+            <rect x="630" y="320" width="60" height="100" fill="#13151c" stroke="#262934"/>
+            <rect x="800" y="320" width="60" height="100" fill="#13151c" stroke="#262934"/>
+            <rect x="690" y="370" width="110" height="50" fill="#15171f" stroke="#2a2e3a"/>
+            <rect x="715" y="385" width="60" height="6" fill="#3a3e4d"/>
+          </g>
+          <!-- fireplace -->
+          <g id="gfx-fireplace">
+            <rect x="380" y="260" width="160" height="160" fill="#0d0f15" stroke="#262934"/>
+            <path d="M395 420 L395 300 Q460 250 525 300 L525 420 Z" fill="#070809"/>
+            <ellipse cx="460" cy="400" rx="36" ry="18" fill="#3a2412" opacity="0.7"/>
+            <ellipse cx="460" cy="392" rx="20" ry="10" fill="#E8A857" opacity="0.55"/>
+          </g>
+          <!-- portrait (movable) -->
+          <g id="gfx-portrait" style="transition:transform .6s cubic-bezier(.4,0,.2,1); transform-origin:620px 130px;">
+            <rect x="600" y="70" width="120" height="150" fill="#181b24" stroke="#3a2f1e" stroke-width="4"/>
+            <ellipse cx="660" cy="135" rx="38" ry="48" fill="#0f1117"/>
+            <ellipse cx="660" cy="118" rx="16" ry="18" fill="#23262f"/>
+          </g>
+          <!-- safe (revealed behind portrait) -->
+          <g id="gfx-safe" opacity="0">
+            <rect x="615" y="80" width="90" height="90" fill="#0e1014" stroke="#3a3e4d" stroke-width="3"/>
+            <circle cx="660" cy="125" r="20" fill="#181b24" stroke="#E8A857" stroke-width="2"/>
+            <circle cx="660" cy="125" r="3" fill="#E8A857"/>
+          </g>
+          <!-- trapdoor under rug (revealed after safe) -->
+          <g id="gfx-trapdoor" opacity="0">
+            <rect x="260" y="470" width="140" height="56" fill="#0c0e14" stroke="#E8A857" stroke-width="2" stroke-dasharray="6 4"/>
+          </g>
+        </svg>
+        <div class="scene-overlay"></div>
+
+        <!-- hotspots, positions in % of 980x560 box -->
+        <div class="hotspot" id="hs-window" style="left:12%; top:17%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot" id="hs-clock" style="left:46%; top:14%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot" id="hs-bookshelf" style="left:16%; top:48%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot" id="hs-drawer" style="left:76%; top:71%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot" id="hs-portrait" style="left:67%; top:24%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot dim" id="hs-safe" style="left:67%; top:24%; opacity:0; pointer-events:none;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot" id="hs-fireplace" style="left:46%; top:67%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot dim" id="hs-rug" style="left:34%; top:89%; opacity:0; pointer-events:none;"><span class="ring"></span><span class="dot"></span></div>
+      </div>
+
+      <!-- ============ ROOM 2: THE CELLAR ============ -->
+      <div class="room-layer" id="room-cellar" hidden>
+        <div class="room-tag">BELOW — CELLAR</div>
+        <svg viewBox="0 0 980 560" preserveAspectRatio="xMidYMid slice">
+          <rect width="980" height="560" fill="#08090d"/>
+          <rect x="0" y="0" width="980" height="440" fill="#0b0c12"/>
+          <rect x="0" y="440" width="980" height="120" fill="#040507"/>
+          <line x1="0" y1="80" x2="980" y2="80" stroke="#1c1f29" stroke-width="2"/>
+          <line x1="0" y1="220" x2="980" y2="220" stroke="#15171f" stroke-width="1"/>
+          <!-- stairs back up -->
+          <g id="gfx-stairs">
+            <path d="M40 200 L160 200 L160 220 L120 220 L120 240 L80 240 L80 260 L40 260 Z" fill="#13151c" stroke="#262934"/>
+          </g>
+          <!-- pipes -->
+          <g id="gfx-pipes">
+            <rect x="70" y="160" width="20" height="300" fill="#171a22" stroke="#262934"/>
+            <rect x="100" y="160" width="14" height="300" fill="#13151c" stroke="#262934"/>
+            <circle id="valveDot" cx="80" cy="300" r="10" fill="#2a2e3a"/>
+          </g>
+          <!-- workbench -->
+          <g id="gfx-workbench">
+            <rect x="380" y="370" width="240" height="16" fill="#181b24"/>
+            <rect x="400" y="386" width="16" height="60" fill="#13151c"/>
+            <rect x="580" y="386" width="16" height="60" fill="#13151c"/>
+            <rect x="430" y="345" width="70" height="30" fill="#1d2029" stroke="#2a2e3a"/>
+            <line x1="438" y1="355" x2="492" y2="355" stroke="#3a3e4d"/>
+            <line x1="438" y1="364" x2="480" y2="364" stroke="#3a3e4d"/>
+          </g>
+          <!-- strongbox -->
+          <g id="gfx-strongbox">
+            <rect x="760" y="330" width="150" height="120" rx="6" fill="#13151c" stroke="#3a3e4d" stroke-width="3"/>
+            <circle cx="835" cy="388" r="22" fill="#0e1014" stroke="#E8A857" stroke-width="2"/>
+            <circle cx="835" cy="388" r="4" fill="#E8A857"/>
+            <circle cx="780" cy="345" r="3" fill="#2a2e3a"/>
+            <circle cx="890" cy="345" r="3" fill="#2a2e3a"/>
+            <circle cx="780" cy="438" r="3" fill="#2a2e3a"/>
+            <circle cx="890" cy="438" r="3" fill="#2a2e3a"/>
+          </g>
+          <!-- loose brick -->
+          <g id="gfx-brick">
+            <rect x="850" y="110" width="60" height="32" fill="#16181f" stroke="#262934"/>
+          </g>
+          <!-- iron door to conservatory (revealed after strongbox) -->
+          <g id="gfx-cellardoor" opacity="0">
+            <rect x="430" y="120" width="110" height="220" rx="4" fill="#0c0e14" stroke="#E8A857" stroke-width="2"/>
+            <circle cx="520" cy="230" r="5" fill="#E8A857"/>
+          </g>
+        </svg>
+        <div class="scene-overlay"></div>
+
+        <div class="hotspot" id="hs-stairs" style="left:10%; top:41%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot" id="hs-pipes" style="left:8%; top:54%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot" id="hs-workbench" style="left:47%; top:71%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot" id="hs-strongbox" style="left:85%; top:69%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot secret-hotspot" id="hs-brick" style="left:90%; top:22%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot dim" id="hs-cellardoor" style="left:49%; top:41%; opacity:0; pointer-events:none;"><span class="ring"></span><span class="dot"></span></div>
+      </div>
+
+      <!-- ============ ROOM 3: THE CONSERVATORY ============ -->
+      <div class="room-layer" id="room-conservatory" hidden>
+        <div class="room-tag">EAST WING — CONSERVATORY</div>
+        <svg viewBox="0 0 980 560" preserveAspectRatio="xMidYMid slice">
+          <rect width="980" height="560" fill="#090d0c"/>
+          <rect x="0" y="0" width="980" height="430" fill="#0a1010"/>
+          <rect x="0" y="430" width="980" height="130" fill="#05080a"/>
+          <!-- glass roof framing -->
+          <path d="M0 120 L490 20 L980 120" fill="none" stroke="#1c2722" stroke-width="2"/>
+          <line x1="245" y1="70" x2="245" y2="430" stroke="#142019" stroke-width="1"/>
+          <line x1="490" y1="20" x2="490" y2="430" stroke="#142019" stroke-width="1"/>
+          <line x1="735" y1="70" x2="735" y2="430" stroke="#142019" stroke-width="1"/>
+          <!-- door back to cellar -->
+          <g id="gfx-con-back"><rect x="40" y="180" width="90" height="200" rx="4" fill="#0b0d12" stroke="#262934"/></g>
+          <!-- four urns -->
+          <g id="gfx-urns">
+            <g><ellipse cx="300" cy="400" rx="34" ry="14" fill="#11231b"/><path d="M270 400 Q272 340 300 335 Q328 340 330 400 Z" fill="#13261d" stroke="#23463a"/><text x="300" y="378" font-size="22" fill="#5a7a68" text-anchor="middle" font-family="monospace">I</text></g>
+            <g><ellipse cx="430" cy="400" rx="34" ry="14" fill="#11231b"/><path d="M400 400 Q402 340 430 335 Q458 340 460 400 Z" fill="#13261d" stroke="#23463a"/><text x="430" y="378" font-size="22" fill="#5a7a68" text-anchor="middle" font-family="monospace">II</text></g>
+            <g><ellipse cx="560" cy="400" rx="34" ry="14" fill="#11231b"/><path d="M530 400 Q532 340 560 335 Q588 340 590 400 Z" fill="#13261d" stroke="#23463a"/><text x="560" y="378" font-size="22" fill="#5a7a68" text-anchor="middle" font-family="monospace">III</text></g>
+            <g><ellipse cx="690" cy="400" rx="34" ry="14" fill="#11231b"/><path d="M660 400 Q662 340 690 335 Q718 340 720 400 Z" fill="#13261d" stroke="#23463a"/><text x="690" y="378" font-size="20" fill="#5a7a68" text-anchor="middle" font-family="monospace">IV</text></g>
+          </g>
+          <!-- engraved plaque -->
+          <g id="gfx-plaque"><rect x="800" y="150" width="120" height="80" rx="4" fill="#10161a" stroke="#2a3a3a"/></g>
+          <!-- locked gate onward -->
+          <g id="gfx-congate" opacity="0">
+            <rect x="160" y="150" width="100" height="230" rx="4" fill="#0c0e14" stroke="#E8A857" stroke-width="2"/>
+            <circle cx="245" cy="265" r="5" fill="#E8A857"/>
+          </g>
+        </svg>
+        <div class="scene-overlay"></div>
+
+        <div class="hotspot" id="hs-con-back" style="left:9%; top:50%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot" id="hs-plaque" style="left:88%; top:34%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot" id="hs-urns" style="left:50%; top:67%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot dim" id="hs-congate" style="left:21%; top:47%; opacity:0; pointer-events:none;"><span class="ring"></span><span class="dot"></span></div>
+      </div>
+
+      <!-- ============ ROOM 4: THE LIBRARY ============ -->
+      <div class="room-layer" id="room-library" hidden>
+        <div class="room-tag">WEST WING — LIBRARY</div>
+        <svg viewBox="0 0 980 560" preserveAspectRatio="xMidYMid slice">
+          <rect width="980" height="560" fill="#0a0a0d"/>
+          <rect x="0" y="0" width="980" height="440" fill="#0c0c11"/>
+          <rect x="0" y="440" width="980" height="120" fill="#050507"/>
+          <!-- tall shelves -->
+          <g stroke="#1c1f29" fill="#101218">
+            <rect x="60" y="60" width="150" height="360"/><rect x="220" y="60" width="150" height="360"/>
+            <line x1="60" y1="150" x2="370" y2="150"/><line x1="60" y1="240" x2="370" y2="240"/><line x1="60" y1="330" x2="370" y2="330"/>
+          </g>
+          <!-- coloured book spines for cipher -->
+          <g id="gfx-spines">
+            <rect x="72" y="100" width="12" height="46" fill="#7a4a3a"/><rect x="88" y="96" width="10" height="50" fill="#3a4a7a"/>
+            <rect x="102" y="102" width="14" height="44" fill="#4a7a4a"/><rect x="120" y="98" width="10" height="48" fill="#7a6a3a"/>
+            <rect x="240" y="190" width="12" height="46" fill="#5a3a6a"/><rect x="256" y="186" width="12" height="50" fill="#7a4a3a"/>
+          </g>
+          <!-- reading desk with chessboard -->
+          <g id="gfx-chessdesk"><rect x="600" y="330" width="300" height="18" fill="#181b24"/><rect x="640" y="348" width="18" height="70" fill="#13151c"/><rect x="842" y="348" width="18" height="70" fill="#13151c"/></g>
+          <!-- door onward (revealed) -->
+          <g id="gfx-libdoor" opacity="0"><rect x="450" y="150" width="100" height="230" rx="4" fill="#0c0e14" stroke="#E8A857" stroke-width="2"/><circle cx="535" cy="265" r="5" fill="#E8A857"/></g>
+        </svg>
+        <div class="scene-overlay"></div>
+
+        <div class="hotspot" id="hs-lib-back" style="left:6%; top:14%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot" id="hs-spines" style="left:11%; top:21%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot" id="hs-chess" style="left:76%; top:60%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot dim" id="hs-libdoor" style="left:51%; top:47%; opacity:0; pointer-events:none;"><span class="ring"></span><span class="dot"></span></div>
+      </div>
+
+      <!-- ============ ROOM 5: THE ATTIC (FINAL) ============ -->
+      <div class="room-layer" id="room-attic" hidden>
+        <div class="room-tag">ABOVE ALL — THE THIRD FLOOR</div>
+        <svg viewBox="0 0 980 560" preserveAspectRatio="xMidYMid slice">
+          <rect width="980" height="560" fill="#08080b"/>
+          <path d="M0 200 L490 40 L980 200 L980 560 L0 560 Z" fill="#0a0a0f"/>
+          <path d="M0 200 L490 40 L980 200" fill="none" stroke="#1c1f29" stroke-width="2"/>
+          <line x1="490" y1="40" x2="490" y2="560" stroke="#121319"/>
+          <!-- fuse / circuit board -->
+          <g id="gfx-circuit"><rect x="380" y="220" width="220" height="150" rx="6" fill="#0d1013" stroke="#2a2e3a" stroke-width="2"/></g>
+          <!-- the impossible door -->
+          <g id="gfx-finaldoor"><rect x="700" y="180" width="150" height="300" rx="4" fill="#0a0c10" stroke="#3a3e4d" stroke-width="3"/><circle cx="825" cy="330" r="9" fill="#181b24" stroke="#E8A857" stroke-width="2"/></g>
+          <!-- stairs down -->
+          <g id="gfx-atticstairs"><path d="M40 300 L150 300 L150 320 L110 320 L110 340 L70 340 L70 360 L40 360 Z" fill="#101218" stroke="#262934"/></g>
+        </svg>
+        <div class="scene-overlay"></div>
+
+        <div class="hotspot" id="hs-attic-back" style="left:8%; top:58%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot" id="hs-circuit" style="left:50%; top:53%;"><span class="ring"></span><span class="dot"></span></div>
+        <div class="hotspot" id="hs-finaldoor" style="left:79%; top:59%;"><span class="ring"></span><span class="dot"></span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="inv-bar">
+    <span class="label">INVENTORY</span>
+    <div class="inv-slot empty" id="inv0">·</div>
+    <div class="inv-slot empty" id="inv1">·</div>
+    <div class="inv-slot empty" id="inv2">·</div>
+    <div class="inv-slot empty" id="inv3">·</div>
+    <div class="inv-slot empty" id="inv4">·</div>
+  </div>
+
+  <div class="archivist" id="archivistPanel" hidden>
+    <div class="card">
+      <button class="close-arch" id="archClose" title="Close">✕</button>
+      <div class="who"><div class="av"></div><div><strong style="font-size:.82rem;">The Archivist</strong><div style="font-size:.7rem; color:var(--muted);">keeper of closed cases</div></div></div>
+      <div class="log" id="archLog">
+        <div class="line">I keep what's left of this house. Ask, if you'd like. I may even answer.</div>
+      </div>
+      <div class="prompts">
+        <button data-q="who">Who was Eleanor Voss?</button>
+        <button data-q="safe">What's behind the portrait?</button>
+        <button data-q="hint">Any advice for me?</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="notebook-panel" id="notebookPanel" hidden>
+    <h3>Journal</h3>
+    <div id="notebookList"><div class="notebook-empty">Nothing recorded yet. Search the room.</div></div>
+  </div>
+
+  <!-- generic modal mount -->
+  <div class="modal-bg" id="modalBg" hidden>
+    <div class="modal" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------------- WORLDS DATA ---------------- */
+  const worlds = [
+    ["Haunted Mansion","ACTIVE"],["Space Station","ACTIVE"],["Ancient Temple","ACTIVE"],
+    ["Pirate Ship","ACTIVE"],["Cyberpunk Apartment","ACTIVE"],["Luxury Train","ACTIVE"],
+    ["Nuclear Bunker","ACTIVE"],["Medieval Castle","ACTIVE"],["AI Laboratory","ACTIVE"],
+    ["Lost Jungle","ACTIVE"],["Time Travel Facility","PREMIUM"],["Abandoned Hospital","PREMIUM"]
+  ];
+  const worldsRow = document.getElementById('worldsRow');
+  worlds.forEach(([name, tag]) => {
+    const el = document.createElement('div');
+    el.className = 'world-card';
+    el.innerHTML = `<div class="wtag">${tag}</div><div class="wlabel">${name}</div>`;
+    worldsRow.appendChild(el);
+  });
+
+  /* ---------------- FAQ ---------------- */
+  const faqs = [
+    ["Is every case really different?","Yes. Layout, story, characters, and the puzzle chain are generated per session from a connected story graph — nothing is pulled from a fixed pool."],
+    ["What happens if I run out of time?","The case locks. You can review what you found in your journal, but the room won't reopen until you start a new one."],
+    ["Can I play with friends?","Shared-room play with a synced inventory is part of the roadmap — today's build is single-player."],
+    ["Do hints cost anything?","Hints come in a chain from vague to direct. Free accounts get the standard chain; premium unlocks an extra layer before the final answer."]
+  ];
+  const faqList = document.getElementById('faqList');
+  faqs.forEach(([q,a]) => {
+    const item = document.createElement('div');
+    item.className = 'faq-item';
+    item.innerHTML = `<button class="faq-q"><span>${q}</span><span class="plus">+</span></button><div class="faq-a"><p>${a}</p></div>`;
+    item.querySelector('.faq-q').addEventListener('click', () => {
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => { i.classList.remove('open'); i.querySelector('.faq-a').style.maxHeight = null; });
+      if (!wasOpen) { item.classList.add('open'); const a = item.querySelector('.faq-a'); a.style.maxHeight = a.scrollHeight + 'px'; }
+    });
+    faqList.appendChild(item);
+  });
+
+  /* ---------------- FOG / PARTICLE CANVAS ---------------- */
+  const canvas = document.getElementById('fogCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  function resizeCanvas(){
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  function makeParticles(){
+    particles = [];
+    const count = 26;
+    for (let i=0;i<count;i++){
+      particles.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        r: 60 + Math.random()*160,
+        vx: (Math.random()-0.5)*0.12,
+        vy: (Math.random()-0.5)*0.06,
+        hue: Math.random() > 0.5 ? 'amber' : 'blue',
+        a: 0.03 + Math.random()*0.05
+      });
+    }
+  }
+  function drawFog(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p => {
+      const grad = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+      if (p.hue === 'amber'){
+        grad.addColorStop(0, `rgba(232,168,87,${p.a})`);
+      } else {
+        grad.addColorStop(0, `rgba(86,114,168,${p.a})`);
+      }
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fill();
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < -p.r) p.x = canvas.width+p.r;
+      if (p.x > canvas.width+p.r) p.x = -p.r;
+      if (p.y < -p.r) p.y = canvas.height+p.r;
+      if (p.y > canvas.height+p.r) p.y = -p.r;
+    });
+  }
+  function loop(){
+    drawFog();
+    if (!reducedMotion) requestAnimationFrame(loop);
+  }
+  resizeCanvas(); makeParticles();
+  if (reducedMotion){ drawFog(); } else { loop(); }
+  window.addEventListener('resize', () => { resizeCanvas(); makeParticles(); });
+
+  /* lantern cursor glow on hero */
+  const heroSec = document.getElementById('heroSec');
+  const lantern = document.getElementById('lantern');
+  if (!reducedMotion){
+    heroSec.addEventListener('mousemove', (e) => {
+      lantern.style.left = e.clientX + 'px';
+      lantern.style.top = e.clientY + 'px';
+    });
+  }
+
+  /* ---------------- NAV / CTA ---------------- */
+  const landing = document.getElementById('landing');
+  const game = document.getElementById('game');
+
+  function enterGame(){
+    landing.hidden = true;
+    game.hidden = false;
+    window.scrollTo(0,0);
+    startTimer();
+  }
+  function exitGame(){
+    game.hidden = true;
+    landing.hidden = false;
+    resetGameState();
+  }
+  document.getElementById('startBtn').addEventListener('click', enterGame);
+  document.getElementById('navStart').addEventListener('click', enterGame);
+  document.getElementById('freeCta').addEventListener('click', (e)=>{ e.preventDefault(); enterGame(); });
+  document.getElementById('premCta').addEventListener('click', (e)=>{ e.preventDefault(); enterGame(); });
+  document.getElementById('quitBtn').addEventListener('click', exitGame);
+
+  /* ---------------- GAME STATE ---------------- */
+  const TOTAL_TIME = 1800; // 30:00 — five-room estate
+  let timeLeft = TOTAL_TIME;
+  let timerInterval = null;
+  let journal = [];
+  let inventory = [];
+  let currentRoom = 'study';
+  let portraitMoved = false;
+  let drawerSolved = false;
+  let safeSolved = false;
+  let morseSolved = false;
+  let riddleSolved = false;
+  let strongboxSolved = false;
+  let foundSecret = false;
+  let urnsSolved = false;
+  let chessSolved = false;
+  let spinesRead = false;
+  let circuitSolved = false;
+  let switches = [false,false,false,false,false];
+  let hintIndex = { drawer: 0, safe: 0, morse: 0, riddle: 0, strongbox: 0, urns: 0, chess: 0, circuit: 0 };
+
+  const timerPill = document.getElementById('timerPill');
+  function startTimer(){
+    clearInterval(timerInterval);
+    timeLeft = TOTAL_TIME;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      updateTimerDisplay();
+      if (timeLeft <= 0){
+        clearInterval(timerInterval);
+        openModal(lockedOutModal());
+      }
+    }, 1000);
+  }
+  function updateTimerDisplay(){
+    const m = Math.floor(timeLeft/60).toString().padStart(2,'0');
+    const s = (timeLeft%60).toString().padStart(2,'0');
+    timerPill.textContent = `${m}:${s}`;
+    timerPill.classList.toggle('low', timeLeft <= 60);
+  }
+
+  function goToRoom(name){
+    currentRoom = name;
+    document.getElementById('room-study').hidden = (name !== 'study');
+    document.getElementById('room-cellar').hidden = (name !== 'cellar');
+    document.getElementById('room-conservatory').hidden = (name !== 'conservatory');
+    document.getElementById('room-library').hidden = (name !== 'library');
+    document.getElementById('room-attic').hidden = (name !== 'attic');
+  }
+
+  function resetGameState(){
+    clearInterval(timerInterval);
+    journal = []; inventory = [];
+    portraitMoved = false; drawerSolved = false; safeSolved = false;
+    morseSolved = false; riddleSolved = false; strongboxSolved = false; foundSecret = false;
+    urnsSolved = false; chessSolved = false; spinesRead = false; circuitSolved = false;
+    switches = [false,false,false,false,false];
+    hintIndex = { drawer: 0, safe: 0, morse: 0, riddle: 0, strongbox: 0, urns: 0, chess: 0, circuit: 0 };
+    renderNotebook(); renderInventory();
+    goToRoom('study');
+    document.getElementById('gfx-portrait').style.transform = '';
+    document.getElementById('gfx-safe').setAttribute('opacity','0');
+    document.getElementById('gfx-trapdoor').setAttribute('opacity','0');
+    document.getElementById('gfx-cellardoor').setAttribute('opacity','0');
+    document.getElementById('gfx-congate').setAttribute('opacity','0');
+    document.getElementById('gfx-libdoor').setAttribute('opacity','0');
+    hideHs('hs-safe'); showHs('hs-portrait');
+    hideHs('hs-rug'); hideHs('hs-cellardoor'); hideHs('hs-congate'); hideHs('hs-libdoor');
+    document.getElementById('archLog').innerHTML = `<div class="line">I keep what's left of this house. Ask, if you'd like. I may even answer.</div>`;
+    archivistPanel.hidden = true;
+    closeModal();
+    notebookPanel.hidden = true;
+  }
+  function showHs(id){ const h = document.getElementById(id); h.style.opacity='1'; h.style.pointerEvents='auto'; h.classList.remove('dim'); }
+  function hideHs(id){ const h = document.getElementById(id); h.style.opacity='0'; h.style.pointerEvents='none'; }
+
+  function addJournal(tag, text){
+    if (journal.find(j => j.tag === tag)) return;
+    journal.push({tag, text});
+    renderNotebook();
+  }
+  function addItem(label){
+    if (inventory.includes(label)) return;
+    if (inventory.length >= 5) return;
+    inventory.push(label);
+    renderInventory();
+  }
+  function renderInventory(){
+    for (let i=0;i<5;i++){
+      const slot = document.getElementById('inv'+i);
+      if (inventory[i]){ slot.textContent = inventory[i]; slot.classList.add('filled'); slot.classList.remove('empty'); }
+      else { slot.textContent = '·'; slot.classList.remove('filled'); slot.classList.add('empty'); }
+    }
+  }
+  const notebookList = document.getElementById('notebookList');
+  function renderNotebook(){
+    if (journal.length === 0){ notebookList.innerHTML = '<div class="notebook-empty">Nothing recorded yet. Search the room.</div>'; return; }
+    notebookList.innerHTML = journal.map(j => `<div class="notebook-entry"><span class="tag">${j.tag}</span>${j.text}</div>`).join('');
+  }
+
+  const notebookPanel = document.getElementById('notebookPanel');
+  document.getElementById('notebookBtn').addEventListener('click', () => { notebookPanel.hidden = !notebookPanel.hidden; });
+
+  const archivistPanel = document.getElementById('archivistPanel');
+  document.getElementById('archivistBtn').addEventListener('click', () => { archivistPanel.hidden = !archivistPanel.hidden; });
+  document.getElementById('archClose').addEventListener('click', () => { archivistPanel.hidden = true; });
+  document.addEventListener('click', (e) => {
+    if (archivistPanel.hidden) return;
+    if (e.target.closest('.archivist') || e.target.id === 'archivistBtn') return;
+    archivistPanel.hidden = true;
+  });
+
+  /* ---------------- MODAL HELPERS ---------------- */
+  const modalBg = document.getElementById('modalBg');
+  const modalBody = document.getElementById('modalBody');
+  function openModal(html){
+    modalBody.innerHTML = `<button class="close" id="modalClose">✕</button>` + html;
+    modalBg.hidden = false;
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+  }
+  function closeModal(){ modalBg.hidden = true; modalBody.innerHTML=''; }
+  modalBg.addEventListener('click', (e) => { if (e.target === modalBg) closeModal(); });
+
+  function lockedOutModal(){
+    return `<div class="eyebrow">Time's Up</div><h3>The case stays closed.</h3>
+      <p class="body-text">The clock ran out somewhere between the study and the cellar. The Voss Estate locks itself behind you — try again from the surface.</p>
+      <div class="actions"><button class="btn btn-amber" style="flex:1" id="lockedReturn">Return to Surface</button></div>`;
+  }
+
+  /* ---------------- SCENE OVERLAY (LANTERN / FOG OF WAR) ---------------- */
+  const scene = document.getElementById('scene');
+  if (!reducedMotion){
+    scene.addEventListener('mousemove', (e) => {
+      const r = scene.getBoundingClientRect();
+      const mx = ((e.clientX - r.left) / r.width) * 100;
+      const my = ((e.clientY - r.top) / r.height) * 100;
+      scene.style.setProperty('--mx', mx + '%');
+      scene.style.setProperty('--my', my + '%');
+    });
+    scene.addEventListener('touchmove', (e) => {
+      const t = e.touches[0]; if (!t) return;
+      const r = scene.getBoundingClientRect();
+      const mx = ((t.clientX - r.left) / r.width) * 100;
+      const my = ((t.clientY - r.top) / r.height) * 100;
+      scene.style.setProperty('--mx', mx + '%');
+      scene.style.setProperty('--my', my + '%');
+    }, {passive:true});
+  } else {
+    document.querySelectorAll('.scene-overlay').forEach(el => { el.style.background = 'none'; });
+  }
+
+  /* ---------------- HOTSPOTS — STUDY ---------------- */
+  document.getElementById('hs-bookshelf').addEventListener('click', () => {
+    addItem('📜');
+    addJournal('TORN PAGE', "\"Two numbers stay with me always: 9 and 6. The third, she hid in the drawer — written the way she always wrote when she didn't trust the house.\"");
+    openModal(`<div class="eyebrow">Bookshelf</div><h3>A torn page, pressed into a ledger</h3>
+      <p class="body-text">Two numbers stay with me always: 9 and 6. The third, she hid in the drawer — written the way she always wrote when she didn't trust the house.</p>
+      <p class="body-text" style="margin-top:10px; color:var(--amber);">Added to your journal and inventory.</p>`);
+  });
+
+  document.getElementById('hs-window').addEventListener('click', () => {
+    openModal(`<div class="eyebrow">Window</div><h3>Frost, in no particular pattern</h3>
+      <p class="body-text">For a second it looks like the cracks spell something — dots and dashes, almost. They don't. It's just cold glass, and the garden below has been dead for decades.</p>`);
+  });
+
+  document.getElementById('hs-clock').addEventListener('click', () => {
+    addJournal('WALL CLOCK', "Stopped at three o'clock the night she vanished — frozen ever since, despite how particular Eleanor was about every other clock in the house.");
+    openModal(`<div class="eyebrow">Wall Clock</div><h3>Stopped, and never restarted</h3>
+      <p class="body-text">Three o'clock, exactly. Eleanor wound every clock in this house herself, every week, without fail — except this one. She let it stop on purpose. People don't usually freeze a clock without a reason.</p>`);
+  });
+
+  document.getElementById('hs-fireplace').addEventListener('click', () => {
+    openModal(`<div class="eyebrow">Fireplace</div><h3>Cold for forty years</h3>
+      <p class="body-text">The ash has long since gone to dust. Whatever Eleanor burned the night she vanished, she made sure it couldn't be read again. The mantel is bare — but the portrait beside it has never once been dusted.</p>`);
+  });
+
+  document.getElementById('hs-portrait').addEventListener('click', () => {
+    portraitMoved = true;
+    document.getElementById('gfx-portrait').style.transform = 'translate(-160px, 10px) rotate(-9deg)';
+    document.getElementById('gfx-safe').setAttribute('opacity','1');
+    document.getElementById('hs-portrait').style.opacity = '0';
+    document.getElementById('hs-portrait').style.pointerEvents = 'none';
+    const safeHs = document.getElementById('hs-safe');
+    safeHs.style.opacity = '1';
+    safeHs.style.pointerEvents = 'auto';
+    safeHs.classList.remove('dim');
+    openModal(`<div class="eyebrow">Portrait</div><h3>It swings aside on a hidden hinge</h3>
+      <p class="body-text">Eleanor's painted eyes were never quite looking at the room. Behind the frame: a wall safe, dial still bright from use.</p>`);
+  });
+
+  document.getElementById('hs-drawer').addEventListener('click', () => {
+    if (drawerSolved){
+      openModal(`<div class="eyebrow">Desk Drawer</div><h3>Already open</h3><p class="body-text">Empty now, save for the cipher you already broke.</p>`);
+      return;
+    }
+    openModal(cipherModal());
+  });
+
+  document.getElementById('hs-rug').addEventListener('click', () => {
+    goToRoom('cellar');
+  });
+
+  document.getElementById('hs-safe').addEventListener('click', () => {
+    if (!portraitMoved) return;
+    if (safeSolved){
+      openModal(`<div class="eyebrow">Wall Safe</div><h3>Open</h3><p class="body-text">You've already taken what was inside.</p>`);
+      return;
+    }
+    openModal(safeModal());
+  });
+
+  /* ---------------- CIPHER PUZZLE (DRAWER) ---------------- */
+  const cipherHints = [
+    "The torn page said this was written the way Eleanor wrote when she didn't trust the house. Something else in this room might explain how.",
+    "The clock on the wall stopped at a particular hour. That number is worth paying attention to.",
+    "A Caesar shift of three, moved back: A becomes X, B becomes Y, and so on."
+  ];
+  function cipherModal(){
+    return `<div class="eyebrow">Desk Drawer — Locked</div>
+      <h3>A cipher is carved into the wood</h3>
+      <div class="cipher">W K U H H</div>
+      <p class="body-text">Whatever shifted these letters, the page never said how much. Decode it.</p>
+      <input type="text" id="cipherInput" placeholder="TYPE THE DECODED WORD" autocomplete="off">
+      <div class="feedback" id="cipherFeedback"></div>
+      <div class="actions">
+        <button class="btn btn-ghost" id="cipherTry" style="flex:1">Try</button>
+      </div>
+      <a class="hint-link" id="cipherHintLink">Need a hint? (1 of 3)</a>`;
+  }
+  document.addEventListener('click', (e) => {
+    if (e.target.id === 'cipherTry'){
+      const val = document.getElementById('cipherInput').value.trim().toUpperCase();
+      const fb = document.getElementById('cipherFeedback');
+      if (val === 'THREE'){
+        fb.textContent = 'The lock gives. Drawer slides open.';
+        fb.className = 'feedback good';
+        drawerSolved = true;
+        addItem('🔑');
+        addJournal('CIPHER NOTE', 'Decoded: THREE. The third digit of the safe is 3 — paired with the 9 and 6 from the torn page. The key from this drawer feels too ornate for just a desk.');
+        setTimeout(closeModal, 1100);
+      } else {
+        fb.textContent = 'Not quite. The shift runs the other way than you'+"'"+'d think.';
+        fb.className = 'feedback bad';
+      }
+    }
+    if (e.target.id === 'cipherHintLink'){
+      const i = Math.min(hintIndex.drawer, cipherHints.length - 1);
+      const fb = document.getElementById('cipherFeedback');
+      fb.textContent = cipherHints[i];
+      fb.className = 'feedback';
+      hintIndex.drawer = Math.min(hintIndex.drawer + 1, cipherHints.length);
+      e.target.textContent = hintIndex.drawer >= cipherHints.length ? 'No further hints' : `Need another hint? (${hintIndex.drawer+1} of ${cipherHints.length})`;
+    }
+  });
+
+  /* ---------------- SAFE PUZZLE ---------------- */
+  const safeHints = [
+    "The torn page named two of the three numbers outright.",
+    "The drawer's cipher decoded to a number written as a word — that's your third digit."
+  ];
+  function safeModal(){
+    const opts = Array.from({length:10}, (_,i)=>`<option value="${i}">${i}</option>`).join('');
+    return `<div class="eyebrow">Wall Safe</div>
+      <h3>Three dials, worn smooth at the same three numbers</h3>
+      <p class="body-text">Set the combination from what you've recorded in your journal.</p>
+      <div class="dial-row">
+        <select id="dial0"><option value="">–</option>${opts}</select>
+        <select id="dial1"><option value="">–</option>${opts}</select>
+        <select id="dial2"><option value="">–</option>${opts}</select>
+      </div>
+      <div class="feedback" id="safeFeedback"></div>
+      <div class="actions"><button class="btn btn-ghost" id="safeTry" style="flex:1">Turn the dials</button></div>
+      <a class="hint-link" id="safeHintLink">Need a hint? (1 of 2)</a>`;
+  }
+  document.addEventListener('click', (e) => {
+    if (e.target.id === 'safeTry'){
+      const d0 = document.getElementById('dial0').value;
+      const d1 = document.getElementById('dial1').value;
+      const d2 = document.getElementById('dial2').value;
+      const fb = document.getElementById('safeFeedback');
+      if (d0 === '9' && d1 === '6' && d2 === '3'){
+        fb.textContent = 'The dial clicks home. Somewhere beneath the floor, something shifts.';
+        fb.className = 'feedback good';
+        safeSolved = true;
+        document.getElementById('gfx-trapdoor').setAttribute('opacity','1');
+        const rugHs = document.getElementById('hs-rug');
+        rugHs.style.opacity = '1';
+        rugHs.style.pointerEvents = 'auto';
+        rugHs.classList.remove('dim');
+        addJournal('HIDDEN DOOR', 'Behind the safe\'s back panel, a draft — and beneath the rug by the fireplace, the outline of a trapdoor that wasn\'t there before.');
+        setTimeout(closeModal, 1300);
+      } else {
+        fb.textContent = 'Nothing moves. Wrong combination.';
+        fb.className = 'feedback bad';
+      }
+    }
+    if (e.target.id === 'safeHintLink'){
+      const i = Math.min(hintIndex.safe, safeHints.length - 1);
+      const fb = document.getElementById('safeFeedback');
+      fb.textContent = safeHints[i];
+      fb.className = 'feedback';
+      hintIndex.safe = Math.min(hintIndex.safe + 1, safeHints.length);
+      e.target.textContent = hintIndex.safe >= safeHints.length ? 'No further hints' : `Need another hint? (${hintIndex.safe+1} of ${safeHints.length})`;
+    }
+  });
+
+  /* ---------------- HOTSPOTS — CELLAR ---------------- */
+  document.getElementById('hs-stairs').addEventListener('click', () => {
+    goToRoom('study');
+  });
+
+  document.getElementById('hs-brick').addEventListener('click', () => {
+    if (!foundSecret){
+      foundSecret = true;
+      addJournal('LOOSE BRICK', "Wedged into the mortar behind a loose brick: a child's drawing of this house, with a third floor that doesn't exist. Eleanor had no children.");
+    }
+    openModal(`<div class="eyebrow">Loose Brick</div><h3>It comes away easier than it should</h3>
+      <p class="body-text">Behind it, wedged into the mortar: a child's drawing of this house — with a third floor that doesn't exist. Eleanor had no children, as far as anyone ever recorded.</p>
+      <p class="body-text" style="margin-top:10px; color:var(--amber);">Added to your journal.</p>`);
+  });
+
+  /* ---------------- MORSE PUZZLE (PIPES) ---------------- */
+  const MORSE_DIGITS = {'0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.'};
+  const PIPE_CODE = '742';
+  const morseHints = [
+    "Use the reference chart below — every digit has its own unique pattern of dots and dashes.",
+    "The valve pulses three digits in a row, with a longer pause between each. Write each one down before moving to the next."
+  ];
+  function morseModal(){
+    const chart = Object.keys(MORSE_DIGITS).map(d => `<div><b>${d}</b>${MORSE_DIGITS[d]}</div>`).join('');
+    return `<div class="eyebrow">Pipes — Valve</div>
+      <h3>Something taps against the pipe in a steady rhythm</h3>
+      <p class="body-text">Three digits, one at a time, in dots and dashes.</p>
+      <div class="morse-light" id="morseLight"></div>
+      <div class="actions"><button class="btn btn-ghost" id="morsePlay" style="flex:1">▶ Play the pattern</button></div>
+      <input type="text" id="morseInput" placeholder="TYPE THE THREE DIGITS" autocomplete="off" style="margin-top:14px;">
+      <div class="feedback" id="morseFeedback"></div>
+      <div class="actions"><button class="btn btn-ghost" id="morseTry" style="flex:1">Decode</button></div>
+      <div class="morse-chart">${chart}</div>
+      <a class="hint-link" id="morseHintLink">Need a hint? (1 of 2)</a>`;
+  }
+  function buildPulses(str){
+    const UNIT = 170;
+    const pulses = [];
+    const digits = str.split('');
+    digits.forEach((d, di) => {
+      const code = MORSE_DIGITS[d];
+      const symbols = code.split('');
+      symbols.forEach((sym, si) => {
+        pulses.push({ on: true, dur: sym === '.' ? UNIT : UNIT * 3 });
+        if (si < symbols.length - 1) pulses.push({ on: false, dur: UNIT });
+      });
+      if (di < digits.length - 1) pulses.push({ on: false, dur: UNIT * 3 });
+    });
+    return pulses;
+  }
+  function playPulses(pulses, lightEl, btnEl){
+    btnEl.disabled = true;
+    let i = 0;
+    function step(){
+      if (i >= pulses.length){ lightEl.classList.remove('on'); btnEl.disabled = false; return; }
+      const p = pulses[i];
+      lightEl.classList.toggle('on', p.on);
+      i++;
+      setTimeout(step, p.dur);
+    }
+    step();
+  }
+  document.addEventListener('click', (e) => {
+    if (e.target.id === 'morsePlay'){
+      const light = document.getElementById('morseLight');
+      playPulses(buildPulses(PIPE_CODE), light, e.target);
+    }
+    if (e.target.id === 'morseTry'){
+      const val = document.getElementById('morseInput').value.trim();
+      const fb = document.getElementById('morseFeedback');
+      if (val === PIPE_CODE){
+        fb.textContent = 'Three digits, decoded clean.';
+        fb.className = 'feedback good';
+        morseSolved = true;
+        addJournal('PIPE CODE', `The valve taps out ${PIPE_CODE}, over and over, like it has nowhere else to be.`);
+        setTimeout(closeModal, 1000);
+      } else {
+        fb.textContent = 'That\'s not it. Play the pattern again and check each digit against the chart.';
+        fb.className = 'feedback bad';
+      }
+    }
+    if (e.target.id === 'morseHintLink'){
+      const i = Math.min(hintIndex.morse, morseHints.length - 1);
+      const fb = document.getElementById('morseFeedback');
+      fb.textContent = morseHints[i];
+      fb.className = 'feedback';
+      hintIndex.morse = Math.min(hintIndex.morse + 1, morseHints.length);
+      e.target.textContent = hintIndex.morse >= morseHints.length ? 'No further hints' : `Need another hint? (${hintIndex.morse+1} of ${morseHints.length})`;
+    }
+  });
+  document.getElementById('hs-pipes').addEventListener('click', () => {
+    openModal(morseModal());
+  });
+
+  /* ---------------- MATH RIDDLE (WORKBENCH) ---------------- */
+  const riddleHints = [
+    "Think in rates, not minutes — how much of the cistern does each pipe fill in a single minute?",
+    "Add the three rates together: 1/4 + 1/6 + 1/12. Then flip the result to get the time."
+  ];
+  function riddleModal(){
+    return `<div class="eyebrow">Workbench</div>
+      <h3>An old ledger, and a scrap of arithmetic in the margin</h3>
+      <p class="lede">Tucked into the ledger, a receipt: <em>"Cistern repair — three pipes installed, 1865."</em> The ink has bled into the margin below it.</p>
+      <p class="body-text">Three pipes feed the cistern below. Alone, the first fills it in four minutes, the second in six, the third in twelve. Running together, how many minutes to fill it?</p>
+      <input type="text" id="riddleInput" placeholder="MINUTES" autocomplete="off">
+      <div class="feedback" id="riddleFeedback"></div>
+      <div class="actions"><button class="btn btn-ghost" id="riddleTry" style="flex:1">Answer</button></div>
+      <a class="hint-link" id="riddleHintLink">Need a hint? (1 of 2)</a>`;
+  }
+  document.addEventListener('click', (e) => {
+    if (e.target.id === 'riddleTry'){
+      const val = document.getElementById('riddleInput').value.trim();
+      const fb = document.getElementById('riddleFeedback');
+      if (val === '2'){
+        fb.textContent = 'Correct. Two minutes, every time.';
+        fb.className = 'feedback good';
+        riddleSolved = true;
+        addJournal('CISTERN RIDDLE', 'Answer: 2. The receipt\'s date — 1865 — doesn\'t seem to matter for anything.');
+        setTimeout(closeModal, 1000);
+      } else {
+        fb.textContent = 'Not quite — try working out each pipe\'s rate per minute first.';
+        fb.className = 'feedback bad';
+      }
+    }
+    if (e.target.id === 'riddleHintLink'){
+      const i = Math.min(hintIndex.riddle, riddleHints.length - 1);
+      const fb = document.getElementById('riddleFeedback');
+      fb.textContent = riddleHints[i];
+      fb.className = 'feedback';
+      hintIndex.riddle = Math.min(hintIndex.riddle + 1, riddleHints.length);
+      e.target.textContent = hintIndex.riddle >= riddleHints.length ? 'No further hints' : `Need another hint? (${hintIndex.riddle+1} of ${riddleHints.length})`;
+    }
+  });
+  document.getElementById('hs-workbench').addEventListener('click', () => {
+    openModal(riddleModal());
+  });
+
+  /* ---------------- STRONGBOX (FINAL LOCK) ---------------- */
+  const STRONGBOX_CODE = '2742';
+  const strongboxHints = [
+    "You'll need two things you've already found in this room — one number from the arithmetic, three more from the pipes.",
+    "It's the cistern's minutes, followed by the pipe's three digits, in that order."
+  ];
+  function strongboxModal(){
+    const hasKey = inventory.includes('🔑');
+    return `<div class="eyebrow">Strongbox</div>
+      <h3>A four-digit lock, and a keyhole beside it</h3>
+      <p class="body-text">${hasKey ? 'The brass key from the study fits the keyhole.' : 'A keyhole sits beside the dial — empty-handed, this won\'t open no matter what you enter.'}</p>
+      <input type="text" id="strongboxInput" placeholder="FOUR DIGITS" autocomplete="off">
+      <div class="feedback" id="strongboxFeedback"></div>
+      <div class="actions"><button class="btn btn-ghost" id="strongboxTry" style="flex:1">Turn the key</button></div>
+      <a class="hint-link" id="strongboxHintLink">Need a hint? (1 of 2)</a>`;
+  }
+  document.addEventListener('click', (e) => {
+    if (e.target.id === 'strongboxTry'){
+      const val = document.getElementById('strongboxInput').value.trim();
+      const fb = document.getElementById('strongboxFeedback');
+      if (!inventory.includes('🔑')){
+        fb.textContent = 'The key turns in nothing. You need one first.';
+        fb.className = 'feedback bad';
+      } else if (val === STRONGBOX_CODE){
+        fb.textContent = 'The key turns. The lid lifts.';
+        fb.className = 'feedback good';
+        strongboxSolved = true;
+        addItem('🏮');
+        addJournal('STRONGBOX', 'Inside: a brass lantern, still oiled, and a card — "The garden remembers what the house forgot." An iron door across the cellar has clicked unlocked.');
+        document.getElementById('gfx-cellardoor').setAttribute('opacity','1');
+        showHs('hs-cellardoor');
+        setTimeout(closeModal, 1300);
+      } else {
+        fb.textContent = 'The key turns, but the dial holds. Wrong code.';
+        fb.className = 'feedback bad';
+      }
+    }
+    if (e.target.id === 'strongboxHintLink'){
+      const i = Math.min(hintIndex.strongbox, strongboxHints.length - 1);
+      const fb = document.getElementById('strongboxFeedback');
+      fb.textContent = strongboxHints[i];
+      fb.className = 'feedback';
+      hintIndex.strongbox = Math.min(hintIndex.strongbox + 1, strongboxHints.length);
+      e.target.textContent = hintIndex.strongbox >= strongboxHints.length ? 'No further hints' : `Need another hint? (${hintIndex.strongbox+1} of ${strongboxHints.length})`;
+    }
+  });
+  document.getElementById('hs-strongbox').addEventListener('click', () => {
+    if (strongboxSolved){
+      openModal(`<div class="eyebrow">Strongbox</div><h3>Open</h3><p class="body-text">Empty now. The lantern's in your hands; the garden's waiting.</p>`);
+      return;
+    }
+    openModal(strongboxModal());
+  });
+  document.getElementById('hs-cellardoor').addEventListener('click', () => { goToRoom('conservatory'); });
+
+  /* ================= ROOM 3: CONSERVATORY ================= */
+  document.getElementById('hs-con-back').addEventListener('click', () => { goToRoom('cellar'); });
+
+  document.getElementById('hs-plaque').addEventListener('click', () => {
+    spinesRead = true; // reuse as "plaque read"
+    addJournal('GREENHOUSE PLAQUE', "Engraved riddle: \"Of four urns, only one holds dry earth. The first lies. The third tells the truth. The liar and the truth-teller are not neighbours. The dry urn is the one no statement points to.\" Urn I: 'The dry one is III.' Urn III: 'The dry one is not I, nor myself.'");
+    openModal(`<div class="eyebrow">Plaque</div><h3>An engraved riddle, green with age</h3>
+      <p class="body-text">"Of four urns, only one holds dry earth. Urn I is a liar; Urn III speaks true. The dry urn is the one no honest statement points to."</p>
+      <p class="lede">Urn I claims: <em>"The dry one is III."</em></p>
+      <p class="lede">Urn III claims: <em>"The dry one is neither I nor myself."</em></p>
+      <p class="body-text" style="margin-top:10px; color:var(--amber);">Recorded to your journal.</p>`);
+  });
+
+  const urnsHints = [
+    "Urn I lies, so its claim ('the dry one is III') is false — the dry urn is NOT III.",
+    "Urn III tells the truth: the dry one is not I and not III. That leaves only II or IV.",
+    "Both honest and dishonest statements mention I and III. The dry urn is the one never named: IV."
+  ];
+  function urnsModal(){
+    return `<div class="eyebrow">The Four Urns</div>
+      <h3>Which urn holds dry earth?</h3>
+      <p class="body-text">Work it out from the plaque, then choose. The dry urn lifts free; the others are rooted fast.</p>
+      <div class="dial-row">
+        <select id="urnPick"><option value="">–</option><option value="1">I</option><option value="2">II</option><option value="3">III</option><option value="4">IV</option></select>
+      </div>
+      <div class="feedback" id="urnsFeedback"></div>
+      <div class="actions"><button class="btn btn-ghost" id="urnsTry" style="flex:1">Lift the urn</button></div>
+      <a class="hint-link" id="urnsHintLink">Need a hint? (1 of 3)</a>`;
+  }
+  document.addEventListener('click', (e) => {
+    if (e.target.id === 'urnsTry'){
+      const val = document.getElementById('urnPick').value;
+      const fb = document.getElementById('urnsFeedback');
+      if (val === '4'){
+        fb.textContent = 'Urn IV lifts free. Beneath it: a small iron key, and the onward gate clicks open.';
+        fb.className = 'feedback good';
+        urnsSolved = true;
+        addItem('🗝️');
+        addJournal('GARDEN KEY', 'Beneath the dry urn (IV): a small iron key. The conservatory gate to the west wing is open.');
+        document.getElementById('gfx-congate').setAttribute('opacity','1');
+        showHs('hs-congate');
+        setTimeout(closeModal, 1400);
+      } else {
+        fb.textContent = 'Damp earth, roots, and nothing else. Wrong urn.';
+        fb.className = 'feedback bad';
+      }
+    }
+    if (e.target.id === 'urnsHintLink'){
+      const i = Math.min(hintIndex.urns, urnsHints.length - 1);
+      const fb = document.getElementById('urnsFeedback'); fb.textContent = urnsHints[i]; fb.className = 'feedback';
+      hintIndex.urns = Math.min(hintIndex.urns + 1, urnsHints.length);
+      e.target.textContent = hintIndex.urns >= urnsHints.length ? 'No further hints' : `Need another hint? (${hintIndex.urns+1} of ${urnsHints.length})`;
+    }
+  });
+  document.getElementById('hs-urns').addEventListener('click', () => {
+    if (urnsSolved){ openModal(`<div class="eyebrow">The Four Urns</div><h3>Already searched</h3><p class="body-text">Three hold roots; the fourth gave up its key.</p>`); return; }
+    openModal(urnsModal());
+  });
+  document.getElementById('hs-congate').addEventListener('click', () => { goToRoom('library'); });
+
+  /* ================= ROOM 4: LIBRARY ================= */
+  document.getElementById('hs-lib-back').addEventListener('click', () => { goToRoom('conservatory'); });
+
+  document.getElementById('hs-spines').addEventListener('click', () => {
+    addJournal('BOOK SPINES', "Four spines on the top shelf, left to right, bear faded numerals: 4 — 1 — 2 — 5. A slip of paper marks them: \"the year she stopped the clock.\"");
+    openModal(`<div class="eyebrow">Book Spines</div><h3>Numbered spines, out of order</h3>
+      <p class="body-text">Four volumes, their numerals worn but legible: 4, 1, 2, 5. A slip between them reads, "the year she stopped the clock." File this away — a later lock may want it.</p>`);
+  });
+
+  // Chess: white to move, mate in one. Qd1-h5 is NOT it; the set position has Qb3 + Bc4 vs lone Kf7 — Qf7# is illegal (own bishop). Use a classic: White Qh5, Bc4, Kg1; Black Kf8... we keep it simple: pick the mating move from 4 options.
+  const chessHints = [
+    "White moves up the board. Look for a queen move that attacks the black king with no escape and no capture.",
+    "The black king sits on h8, boxed by its own pawns on g7 and h7. A back-rank idea won't work — go for the h-file.",
+    "The queen on h5 takes h7: Qxh7 is mate, supported so the king can't take back."
+  ];
+  function chessModal(){
+    // Render an 8x8 board with a tiny set position
+    const pieces = { 'h5':'♕','c4':'♗','g1':'♔', 'h8':'♚','g7':'♟','h7':'♟','a7':'♟' };
+    let board = '<div style="display:grid;grid-template-columns:repeat(8,1fr);width:240px;margin:14px auto;border:1px solid var(--panel-line);">';
+    const files='abcdefgh';
+    for (let r=8;r>=1;r--){
+      for (let f=0;f<8;f++){
+        const sq = files[f]+r;
+        const dark = (f+r)%2===0;
+        const p = pieces[sq] || '';
+        const isBlack = ['h8','g7','h7','a7'].includes(sq);
+        board += `<div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:18px;background:${dark?'#1a1c24':'#23262f'};color:${isBlack?'#cfd3dc':'#E8A857'};">${p}</div>`;
+      }
+    }
+    board += '</div>';
+    return `<div class="eyebrow">Chessboard — White to move</div>
+      <h3>Mate in one</h3>
+      <p class="body-text">A game left mid-play, dust on the clock. White (amber) moves and mates in a single move. Which move?</p>
+      ${board}
+      <div class="dial-row" style="flex-direction:column;gap:8px;">
+        <select id="chessPick">
+          <option value="">– choose White's move –</option>
+          <option value="Qxh7">Queen takes h7 (Qxh7)</option>
+          <option value="Qe8">Queen to e8 (Qe8+)</option>
+          <option value="Bf7">Bishop to f7 (Bf7+)</option>
+          <option value="Qh6">Queen to h6 (Qh6)</option>
+        </select>
+      </div>
+      <div class="feedback" id="chessFeedback"></div>
+      <div class="actions"><button class="btn btn-ghost" id="chessTry" style="flex:1">Make the move</button></div>
+      <a class="hint-link" id="chessHintLink">Need a hint? (1 of 3)</a>`;
+  }
+  document.addEventListener('click', (e) => {
+    if (e.target.id === 'chessTry'){
+      const val = document.getElementById('chessPick').value;
+      const fb = document.getElementById('chessFeedback');
+      if (val === 'Qxh7'){
+        fb.textContent = 'Qxh7 — mate. The king has no square. A panel slides open behind the shelves.';
+        fb.className = 'feedback good';
+        chessSolved = true;
+        addJournal('CHESS', 'Solved the mate-in-one (Qxh7#). A hidden door to the attic stair has opened behind the stacks.');
+        document.getElementById('gfx-libdoor').setAttribute('opacity','1');
+        showHs('hs-libdoor');
+        setTimeout(closeModal, 1400);
+      } else if (val){
+        fb.textContent = 'The black king slips away — not mate. Try again.';
+        fb.className = 'feedback bad';
+      }
+    }
+    if (e.target.id === 'chessHintLink'){
+      const i = Math.min(hintIndex.chess, chessHints.length - 1);
+      const fb = document.getElementById('chessFeedback'); fb.textContent = chessHints[i]; fb.className = 'feedback';
+      hintIndex.chess = Math.min(hintIndex.chess + 1, chessHints.length);
+      e.target.textContent = hintIndex.chess >= chessHints.length ? 'No further hints' : `Need another hint? (${hintIndex.chess+1} of ${chessHints.length})`;
+    }
+  });
+  document.getElementById('hs-chess').addEventListener('click', () => {
+    if (chessSolved){ openModal(`<div class="eyebrow">Chessboard</div><h3>Game over</h3><p class="body-text">The mate stands. Nothing more to play here.</p>`); return; }
+    openModal(chessModal());
+  });
+  document.getElementById('hs-libdoor').addEventListener('click', () => {
+    if (!inventory.includes('🗝️')){
+      openModal(`<div class="eyebrow">Attic Stair</div><h3>Locked</h3><p class="body-text">The narrow door won't give. There's an iron keyhole — you'll need the small key from the garden.</p>`);
+      return;
+    }
+    goToRoom('attic');
+  });
+
+  /* ================= ROOM 5: ATTIC (FINAL) ================= */
+  document.getElementById('hs-attic-back').addEventListener('click', () => { goToRoom('library'); });
+
+  // Circuit puzzle: 5 switches, find the on/off pattern that lights the door.
+  const CIRCUIT_TARGET = [true,false,true,true,false]; // switches 1,3,4 ON
+  const circuitHints = [
+    "The fuse panel is labelled with the same four numerals as the library spines: 4 1 2 5. Read them as switch numbers to flip ON.",
+    "Switches are numbered 1–5. The spines said 4,1,2,5 — but one of those is a decoy that blows the fuse. The clock stopped at THREE; switch 3 must be on too.",
+    "On: switches 1, 3, 4. Off: switches 2, 5. (The '4 1 2 5' hides 1 and 4; the clock adds 3; 2 and 5 stay down.)"
+  ];
+  function circuitModal(){
+    let row = '<div style="display:flex;gap:10px;justify-content:center;margin:16px 0;">';
+    for (let i=0;i<5;i++){
+      row += `<button class="btn btn-ghost circuit-sw" data-sw="${i}" style="flex-direction:column;min-width:48px;padding:10px 6px;${switches[i]?'border-color:var(--amber);background:var(--amber-dim);':''}">
+        <span style="font-size:1.1rem;">${switches[i]?'⬆':'⬇'}</span><span class="mono" style="font-size:.7rem;">${i+1}</span></button>`;
+    }
+    row += '</div>';
+    return `<div class="eyebrow">Fuse Panel</div>
+      <h3>Five switches, one dark door</h3>
+      <p class="body-text">The impossible door has no handle — only this panel wired to it. Find the right pattern and the lock releases.</p>
+      ${row}
+      <div class="feedback" id="circuitFeedback"></div>
+      <div class="actions"><button class="btn btn-ghost" id="circuitTry" style="flex:1">Pull the main lever</button></div>
+      <a class="hint-link" id="circuitHintLink">Need a hint? (1 of 3)</a>`;
+  }
+  document.addEventListener('click', (e) => {
+    const sw = e.target.closest('.circuit-sw');
+    if (sw){
+      const idx = +sw.dataset.sw;
+      switches[idx] = !switches[idx];
+      openModal(circuitModal());
+      return;
+    }
+    if (e.target.id === 'circuitTry'){
+      const fb = document.getElementById('circuitFeedback');
+      if (JSON.stringify(switches) === JSON.stringify(CIRCUIT_TARGET)){
+        fb.textContent = 'The filament flares. The door exhales and swings inward.';
+        fb.className = 'feedback good';
+        circuitSolved = true;
+        clearInterval(timerInterval);
+        setTimeout(() => openModal(winModal()), 1100);
+      } else {
+        fb.textContent = 'A spark, then nothing. The fuse holds, but the door stays shut.';
+        fb.className = 'feedback bad';
+      }
+    }
+    if (e.target.id === 'circuitHintLink'){
+      const i = Math.min(hintIndex.circuit, circuitHints.length - 1);
+      const fb = document.getElementById('circuitFeedback'); fb.textContent = circuitHints[i]; fb.className = 'feedback';
+      hintIndex.circuit = Math.min(hintIndex.circuit + 1, circuitHints.length);
+      e.target.textContent = hintIndex.circuit >= circuitHints.length ? 'No further hints' : `Need another hint? (${hintIndex.circuit+1} of ${circuitHints.length})`;
+    }
+  });
+  document.getElementById('hs-circuit').addEventListener('click', () => {
+    if (circuitSolved){ openModal(`<div class="eyebrow">Fuse Panel</div><h3>Live</h3><p class="body-text">The door is already open. Step through.</p>`); return; }
+    openModal(circuitModal());
+  });
+  document.getElementById('hs-finaldoor').addEventListener('click', () => {
+    if (!circuitSolved){
+      openModal(`<div class="eyebrow">The Door</div><h3>Sealed</h3><p class="body-text">No handle, no hinge you can reach. It answers to the fuse panel, not to you — not yet.</p>`);
+      return;
+    }
+    openModal(winModal());
+  });
+
+  function winModal(){
+    const used = TOTAL_TIME - timeLeft;
+    const m = Math.floor(used/60).toString().padStart(2,'0');
+    const s = (used%60).toString().padStart(2,'0');
+    const secretLine = foundSecret
+      ? `<p class="body-text" style="margin-top:12px;">On the far wall hangs the third floor from the child's drawing — real after all. Eleanor didn't vanish. She walked up here, sealed the stair behind her, and never came down. You found the door she left for whoever was clever enough.</p>`
+      : `<p class="body-text" style="margin-top:12px;">The room beyond is small and bare, but the window looks out from a floor the house isn't supposed to have. Eleanor's coat still hangs by the sill.</p>`;
+    return `<div class="win-modal">
+      <div class="eyebrow">${foundSecret ? 'True Ending' : 'Case Closed'}</div>
+      <h3 class="glow-title">The Voss Estate, escaped.</h3>
+      <p class="body-text">Five rooms, forty years, one door that was never on any blueprint — and you're through it.</p>
+      ${secretLine}
+      <p class="body-text mono" style="color:var(--amber); margin-top:14px;">TIME — ${m}:${s}${foundSecret ? '  •  ★ SECRET FOUND' : ''}</p>
+      <div class="actions"><button class="btn btn-amber" style="flex:1" id="winReturn">Return to Surface</button></div>
+    </div>`;
+  }
+  document.addEventListener('click', (e) => {
+    if (e.target.id === 'winReturn' || e.target.id === 'lockedReturn') exitGame();
+  });
+
+  /* ---------------- HINT BUTTON (TOP BAR) ---------------- */
+  document.getElementById('hintBtn').addEventListener('click', () => {
+    let text = "Start with what's in plain sight — the bookshelf has something worth reading.";
+    if (journal.length > 0 && !drawerSolved) text = "The torn page mentioned a cipher in the drawer. Something else in the study explains the shift — look at what keeps time.";
+    else if (drawerSolved && !portraitMoved) text = "Something in the study has never been dusted. Look closer at the portrait.";
+    else if (portraitMoved && !safeSolved) text = "The safe wants three numbers — two from the page, one from the drawer.";
+    else if (safeSolved && currentRoom === 'study') text = "Check the floor near the fireplace — a trapdoor opened. Go down.";
+    else if (currentRoom === 'cellar' && !strongboxSolved) text = "The strongbox needs the pipes' code and the cistern answer combined, plus the study key. Solve both puzzles down here first.";
+    else if (strongboxSolved && currentRoom === 'cellar') text = "The strongbox unlocked an iron door across the cellar. Take the lantern and go through.";
+    else if (currentRoom === 'conservatory' && !urnsSolved) text = "Read the plaque, then reason out which urn is dry. The liar and the truth-teller both point you to the one urn nobody names.";
+    else if (currentRoom === 'conservatory' && urnsSolved) text = "The gate to the library is open — head west.";
+    else if (currentRoom === 'library' && !chessSolved) text = "The chessboard is a mate-in-one for White. Also check the book spines — their numbers matter later.";
+    else if (currentRoom === 'library' && chessSolved) text = "The attic stair is open, but locked — you'll need the small iron key from under the garden urn.";
+    else if (currentRoom === 'attic' && !circuitSolved) text = "The fuse panel wants a switch pattern. The library spines (4 1 2 5) and the stopped clock (3) tell you which to flip.";
+    else if (circuitSolved) text = "The door is open. Step through it.";
+    openModal(`<div class="eyebrow">Hint</div><h3>A nudge from the Archive</h3><p class="body-text">${text}</p>`);
+  });
+
+  /* ---------------- ARCHIVIST DIALOGUE ---------------- */
+  const archLog = document.getElementById('archLog');
+  const archAnswers = {
+    who: "Eleanor Voss owned this house until the night she didn't. No body, no note anyone could read — until tonight, perhaps.",
+    safe: archivistSafeLine,
+    hint: archivistHint
+  };
+  function archivistSafeLine(){
+    if (!portraitMoved) return "I've said too much about that already. Look behind it yourself; I won't be blamed for what you find.";
+    if (!safeSolved) return "Nine. Six. And whatever that drawer told you. That's all I'll say.";
+    return "There's a door beneath the rug now, by the fireplace. I'd watch the first step.";
+  }
+  function archivistHint(){
+    if (!journal.length) return "Read before you touch. The shelf remembers more than I do.";
+    if (!drawerSolved) return "She wrote a certain way when she didn't trust the house. Something else in that room keeps time — maybe it keeps the answer too.";
+    if (!portraitMoved) return "Dust settles on everything in this room except one frame. Curious, isn't it.";
+    if (!safeSolved) return "Nine. Six. And whatever that drawer told you. That's all I'll say.";
+    if (currentRoom === 'study') return "There's more house beneath this house. Follow the draft.";
+    if (!morseSolved || !riddleSolved) return "The pipes keep a rhythm, and the workbench keeps a sum. Both matter down here.";
+    if (!strongboxSolved) return "The strongbox wants a number and a key. You've had the key longer than you think.";
+    return "You've taken everything this house had to give. Go on, then.";
+  }
+  document.querySelectorAll('.archivist .prompts button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.q;
+      const q = btn.textContent;
+      const a = typeof archAnswers[key] === 'function' ? archAnswers[key]() : archAnswers[key];
+      const qLine = document.createElement('div'); qLine.className='line q'; qLine.textContent = '› ' + q;
+      const aLine = document.createElement('div'); aLine.className='line'; aLine.textContent = a;
+      archLog.appendChild(qLine); archLog.appendChild(aLine);
+      archLog.scrollTop = archLog.scrollHeight;
+    });
+  });
+
+  /* random case id flavor */
+  document.getElementById('caseId').textContent = 'CASE FILE — VOSS-' + Math.random().toString(16).slice(2,6).toUpperCase();
+
+  renderInventory(); renderNotebook();
+})();
+</script>
+</body>
+</html>
